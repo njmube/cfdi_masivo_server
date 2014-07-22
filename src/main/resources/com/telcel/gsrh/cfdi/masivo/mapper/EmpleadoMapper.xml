@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+    PUBLIC "//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.telcel.gsrh.cfdi.masivo.mapper.EmpleadoMapper">
+	
+	<resultMap type="Empleado" id="EmpleadoResult">
+		<result column="NUMEMPLEADO" property="numEmpleado" />
+		<result column="RFC_RECEPTOR" property="rfcEmpleado" />
+		<result column="NOMBRE_ARCHIVO" property="nbArchivo" />
+		<result column="PRODUCTO" property="producto" />
+		<result column="SELLO_DIGITAL" property="selloDigital" />
+		<result column="NOCERTIFICADO_CFD" property="noCertificadoCfd" />
+		<result column="UUID" property="uuid" />
+		<result column="FECHA_EXPEDICION" property="fechaExpedicion" />
+		<result column="FECHA_TIMBRADO" property="fechaTimbrado" />
+		<result column="NOCERTIFICADO_SAT" property="noCertificadoSat" />
+		<result column="SELLOSAT" property="selloSat" />
+		<result column="CADENA_COMPLEM" property="cadenaOriginal" />
+		<result column="CODIGO_BARRAS" property="codigoBarras" />
+		<result column="RFCEMPRESA" property="rfcEmpresa" />
+		<result column="RAZONSOCIALEMPRESA" property="razonSocialEmpresa" />
+		<result column="REGIMENFISCALEMPRESA" property="regimenFiscalEmpresa" />
+		<result column="TIPOREGIMENEMPRESA" property="tipoRegimenEmpresa" />
+		<result column="DOMICILIOFISCALEMPRESA" property="domicilioFiscalEmpresa" />
+		<result column="NOMBRE_COMPLETO" property="nbEmpleado" />
+		<result column="IMSS" property="imss" />
+		<result column="PUESTO" property="puesto" />
+		<result column="DIA_FEP" property="diaPago" />
+		<result column="MES_FEP" property="mesPago" />
+		<result column="ANNIO" property="annioPago" />
+		<result column="QUINCENA" property="quincena" />
+		<result column="FECHA_PAGO_INICIAL" property="fechaInicialPago" />
+		<result column="FECHA_PAGO_FINAL" property="fechaFinalPago" />
+		<result column="PERIODO" property="periodo" />
+		<result column="FECHA_PAGO" property="fechaPago" />
+		<result column="PAYROLL_ID" property="payrollId" />
+		<result column="ORG_ID" property="orgId" />
+		<result column="CURP" property="curp" />
+		<result column="CATEGORIA" property="categoria" />
+		<result column="LOCATION_ID" property="locationId" />
+		<result column="TIME_PERIOD_ID" property="timePeriodId" />
+		<result column="ID_NOMINA" property="idNomina" />
+		<result column="DEPTO" property="departamento" />
+		<result column="LOCALIDA_P" property="localidadPago" />
+		<result column="REGION" property="region" />
+		<result column="REGSITRO_P" property="registroPatronal" />
+		<result column="C_RIESGO" property="claveRiesgo" />
+		<result column="ANTIGUEDAD" property="antiguedad" />
+		<result column="INGRESO" property="ingreso" />
+		<result column="CONTRATO" property="contrato" />
+		<result column="BANCO" property="banco" />
+		<result column="SALARIO" property="salario" />
+		<result column="JORNADA" property="jornada" />
+		<result column="LUGAREMISION" property="lugarEmision" />
+		<result column="LUGAREMISION" property="lugarEmision" />
+	</resultMap>
+	
+	<select id="getEmpleadosTimbradoLocalidad" timeout="3600" resultMap="EmpleadoResult" parameterType="Solicitud">
+		SELECT DISTINCT TO_NUMBER(tim.NRO_EMPLEADO) NUMEMPLEADO, tim.RFC_RECEPTOR, tim.NOMBRE_ARCHIVO, 
+	    tim.PRODUCTO, tim.SELLO_DIGITAL, tim.NOCERTIFICADO_CFD, 
+	    TO_CHAR(tim.FECHA_EXPEDICION, 'YYYY-MM-DD HH24:MI:SS') FECHA_EXPEDICION, 
+	    tim.UUID, tim.NOCERTIFICADO_SAT, 
+	    TO_CHAR(tim.FECHA_TIMBRADO, 'YYYY-MM-DD HH24:MI:SS') FECHA_TIMBRADO, 
+	    tim.SELLOSAT, tim.CADENA_COMPLEM, tim.CODIGO_BARRAS, 
+	    (select valorparametro from recibo_params where cveparametro = 5) RFCEMPRESA, 
+	    (select valorparametro from recibo_params where cveparametro = 6) RAZONSOCIALEMPRESA, 
+	    (select valorparametro from recibo_params where cveparametro = 7) REGIMENFISCALEMPRESA, 
+	    (select valorparametro from recibo_params where cveparametro = 8) TIPOREGIMENEMPRESA, 
+	    (select valorparametro from recibo_params where cveparametro = 9) DOMICILIOFISCALEMPRESA, 
+	    rec.NOMBRE_COMPLETO, rec.RFC, 
+	    rec.IMSS, rec.PUESTO, TO_NUMBER(rec.DIA_FEP) DIA_FEP, 
+	    TO_NUMBER(rec.MES_FEP) MES_FEP, TO_NUMBER(rec.AÑO) ANNIO, TO_NUMBER(rec.QUINCENA) QUINCENA, 
+	    TO_CHAR(rec.FECHA_PAGO_INICIAL, 'DD') || rec.MES_FEP  FECHA_PAGO_INICIAL, 
+	    TO_CHAR(rec.FECHA_PAGO_FINAL, 'DD') || rec.MES_FEP || rec.AÑO FECHA_PAGO_FINAL, 
+	    CASE tim.PRODUCTO 
+	      WHEN 'VALES' THEN 
+	        TO_CHAR(TO_DATE(TO_CHAR(FECHA_PAGO, 'MM'), 'MM'), 'RRRR-MM-DD') || ' AL ' || TO_CHAR(LAST_DAY(FECHA_PAGO), 'RRRR-MM-DD') 
+	      WHEN 'AGUINALDO' THEN 
+	        TO_CHAR(TO_DATE('01', 'MM'), 'RRRR-MM-DD') || ' AL ' || TO_CHAR(LAST_DAY(TO_DATE('12', 'MM')), 'RRRR-MM-DD') 
+	      WHEN 'PTU' THEN 
+	        TO_CHAR(TO_DATE('01' || (TO_NUMBER(TO_CHAR(FECHA_PAGO, 'RRRR')) - 1), 'MMYYYY'), 'RRRR-MM-DD') || ' AL ' || TO_CHAR(LAST_DAY(TO_DATE('12' || (TO_NUMBER(TO_CHAR(FECHA_PAGO, 'RRRR')) - 1), 'MMYYYY')), 'RRRR-MM-DD') 
+	      WHEN 'UTILES' THEN 
+	        TO_CHAR(TO_DATE('08' || (TO_NUMBER(TO_CHAR(FECHA_PAGO, 'RRRR')) - 1), 'MMYYYY'), 'RRRR-MM-DD') || ' AL ' || TO_CHAR(LAST_DAY(TO_DATE('07' || (TO_CHAR(FECHA_PAGO, 'RRRR')), 'MMYYYY')), 'RRRR-MM-DD') 
+	      ELSE 
+	        TO_CHAR(rec.FECHA_PAGO, 'RRRR') || '-' || DECODE(LENGTH(rec.MES_FEP), 1, '0' || rec.MES_FEP, rec.MES_FEP) || '-' || DECODE(MOD(rec.quincena, 2), 1, '01', '16') || ' AL ' || TO_CHAR(rec.FECHA_PAGO, 'RRRR') || '-' || DECODE(LENGTH(rec.MES_FEP), 1, '0' || rec.MES_FEP, rec.MES_FEP) || '-' || TO_CHAR(rec.FECHA_PAGO_FINAL, 'DD') 
+	    END PERIODO, 
+	    TO_CHAR(rec.FECHA_PAGO, 'RRRR') || '-' || DECODE(LENGTH(rec.MES_FEP), 1, '0' || rec.MES_FEP, rec.MES_FEP) || '-' || TO_CHAR(rec.FECHA_PAGO, 'DD') FECHA_PAGO, 
+	    rec.PAYROLL_ID, rec.ORG_ID, rec.CURP, 
+	    rec.CATEGORIA, rec.LOCATION_ID, rec.TIME_PERIOD_ID, 
+	    rec.ID_NOMINA, dep.nbDepto DEPTO, rec.LOCALIDA_P, 
+	    reg.nbregion REGION, rec.REGSITRO_P, 
+	    DECODE(NVL(rec.C_RIESGO, ''), 'I', 1, 'II', 2, 'III', 3, 'IV', 4, 'V', 5) C_RIESGO, 
+	    TO_CHAR(CEIL((rec.FECHA_PAGO - rec.INGRESO) / 7)) ANTIGUEDAD, 
+	    TO_CHAR(rec.INGRESO, 'RRRR-MM-DD') INGRESO, 
+	    TRIM(REPLACE(UPPER(rec.CONTRATO), 'PLANTA', '')) CONTRATO, 
+	    rec.BANCO, rec.SALARIO, 
+	    DECODE(UPPER(rec.JORNADA), 'JORNADA COMPLETA', 'CONTINUADA', rec.JORNADA) JORNADA, 
+	    loc.NBLOCALIDAD || ', ' || loc.CIUDAD LUGAREMISION 
+	    FROM recibo_header rec, recibo_depto dep, recibo_region reg, 
+	      recibo_localidad loc, recibo_timbrado tim, 
+	      recibo_usuario usu 
+	    WHERE 1 = 1 
+	      AND UPPER(tim.PERIODO) = #{periodo} || ' ' || #{annio} || ' QUINCENA'
+	      AND tim.RFC_EMISOR = (select valorparametro from recibo_params where cveparametro = 5) 
+	      AND tim.RFC_RECEPTOR = rec.rfc 
+	      AND rec.año = #{annio}
+	      AND rec.quincena = #{periodo}
+	      AND loc.cvelocalidad = #{cveLocalidad}
+	      AND dep.cveDepto (+)= rec.DEPTO 
+	      AND reg.payroll_id (+)= rec.payroll_id 
+	      AND loc.cvelocalidad (+)= rec.location_id 
+	      AND rec.empleado = usu.numeroempleado
+	    ORDER BY 1 ASC
+	</select>
+	
+	<select id="getEmpleadosTimbradoEnvio" timeout="3600" resultMap="EmpleadoResult" parameterType="SolicitudEnvioRecibo">
+		SELECT DISTINCT TO_NUMBER(tim.NRO_EMPLEADO) NUMEMPLEADO, tim.RFC_RECEPTOR, tim.NOMBRE_ARCHIVO, 
+        tim.PRODUCTO, tim.SELLO_DIGITAL, tim.NOCERTIFICADO_CFD, 
+        TO_CHAR(tim.FECHA_EXPEDICION, 'YYYY-MM-DD HH24:MI:SS') FECHA_EXPEDICION, 
+        tim.UUID, tim.NOCERTIFICADO_SAT, 
+        TO_CHAR(tim.FECHA_TIMBRADO, 'YYYY-MM-DD HH24:MI:SS') FECHA_TIMBRADO, 
+        tim.SELLOSAT, tim.CADENA_COMPLEM, tim.CODIGO_BARRAS, 
+        (select valorparametro from recibo_params where cveparametro = 5) RFCEMPRESA, 
+        (select valorparametro from recibo_params where cveparametro = 6) RAZONSOCIALEMPRESA, 
+        (select valorparametro from recibo_params where cveparametro = 7) REGIMENFISCALEMPRESA, 
+        (select valorparametro from recibo_params where cveparametro = 8) TIPOREGIMENEMPRESA, 
+        (select valorparametro from recibo_params where cveparametro = 9) DOMICILIOFISCALEMPRESA, 
+        rec.NOMBRE_COMPLETO, rec.RFC, 
+        rec.IMSS, rec.PUESTO, TO_NUMBER(rec.DIA_FEP) DIA_FEP, 
+        TO_NUMBER(rec.MES_FEP) MES_FEP, TO_NUMBER(rec.AÑO) ANNIO, TO_NUMBER(rec.QUINCENA) QUINCENA, 
+        TO_CHAR(rec.FECHA_PAGO_INICIAL, 'DD') || rec.MES_FEP  FECHA_PAGO_INICIAL, 
+        TO_CHAR(rec.FECHA_PAGO_FINAL, 'DD') || rec.MES_FEP || rec.AÑO FECHA_PAGO_FINAL, 
+        CASE tim.PRODUCTO 
+          WHEN 'VALES' THEN 
+            TO_CHAR(TO_DATE(TO_CHAR(FECHA_PAGO, 'MM'), 'MM'), 'RRRR-MM-DD') || ' AL ' || TO_CHAR(LAST_DAY(FECHA_PAGO), 'RRRR-MM-DD') 
+          WHEN 'AGUINALDO' THEN 
+            TO_CHAR(TO_DATE('01', 'MM'), 'RRRR-MM-DD') || ' AL ' || TO_CHAR(LAST_DAY(TO_DATE('12', 'MM')), 'RRRR-MM-DD') 
+          WHEN 'PTU' THEN 
+            TO_CHAR(TO_DATE('01' || (TO_NUMBER(TO_CHAR(FECHA_PAGO, 'RRRR')) - 1), 'MMYYYY'), 'RRRR-MM-DD') || ' AL ' || TO_CHAR(LAST_DAY(TO_DATE('12' || (TO_NUMBER(TO_CHAR(FECHA_PAGO, 'RRRR')) - 1), 'MMYYYY')), 'RRRR-MM-DD') 
+          WHEN 'UTILES' THEN 
+            TO_CHAR(TO_DATE('08' || (TO_NUMBER(TO_CHAR(FECHA_PAGO, 'RRRR')) - 1), 'MMYYYY'), 'RRRR-MM-DD') || ' AL ' || TO_CHAR(LAST_DAY(TO_DATE('07' || (TO_CHAR(FECHA_PAGO, 'RRRR')), 'MMYYYY')), 'RRRR-MM-DD') 
+          ELSE 
+            TO_CHAR(rec.FECHA_PAGO, 'RRRR') || '-' || DECODE(LENGTH(rec.MES_FEP), 1, '0' || rec.MES_FEP, rec.MES_FEP) || '-' || DECODE(MOD(rec.quincena, 2), 1, '01', '16') || ' AL ' || TO_CHAR(rec.FECHA_PAGO, 'RRRR') || '-' || DECODE(LENGTH(rec.MES_FEP), 1, '0' || rec.MES_FEP, rec.MES_FEP) || '-' || TO_CHAR(rec.FECHA_PAGO_FINAL, 'DD') 
+        END PERIODO, 
+        TO_CHAR(rec.FECHA_PAGO, 'RRRR') || '-' || DECODE(LENGTH(rec.MES_FEP), 1, '0' || rec.MES_FEP, rec.MES_FEP) || '-' || TO_CHAR(rec.FECHA_PAGO, 'DD') FECHA_PAGO, 
+        rec.PAYROLL_ID, rec.ORG_ID, rec.CURP, 
+        rec.CATEGORIA, rec.LOCATION_ID, rec.TIME_PERIOD_ID, 
+        rec.ID_NOMINA, dep.nbDepto DEPTO, rec.LOCALIDA_P, 
+        reg.nbregion REGION, rec.REGSITRO_P, 
+        DECODE(NVL(rec.C_RIESGO, ''), 'I', 1, 'II', 2, 'III', 3, 'IV', 4, 'V', 5) C_RIESGO, 
+        TO_CHAR(CEIL((rec.FECHA_PAGO - rec.INGRESO) / 7)) ANTIGUEDAD, 
+        TO_CHAR(rec.INGRESO, 'RRRR-MM-DD') INGRESO, 
+        TRIM(REPLACE(UPPER(rec.CONTRATO), 'PLANTA', '')) CONTRATO, 
+        rec.BANCO, rec.SALARIO, 
+        DECODE(UPPER(rec.JORNADA), 'JORNADA COMPLETA', 'CONTINUADA', rec.JORNADA) JORNADA, 
+        loc.NBLOCALIDAD || ', ' || loc.CIUDAD LUGAREMISION 
+	    FROM recibo_header rec, recibo_depto dep, recibo_region reg, 
+	      recibo_localidad loc, recibo_timbrado tim, 
+	      recibo_usuario usu 
+	    WHERE 1 = 1 
+	      AND UPPER(tim.PERIODO) = #{periodo} || ' ' || #{annio} || ' QUINCENA'
+	      AND tim.RFC_EMISOR = (select valorparametro from recibo_params where cveparametro = 5) 
+	      AND tim.RFC_RECEPTOR = rec.rfc 
+	      AND rec.año = #{annio}
+	      AND rec.quincena = #{periodo}
+	      <if test="region != -1">
+		  	AND reg.cveregion = #{region}
+		  </if>
+	      <if test="noEmpleado != -1">
+		  	AND usu.numeroempleado = #{noEmpleado}
+		  </if>
+          <if test="tpRecibo != -1">
+		  	AND tim.PRODUCTO = DECODE(#{tpRecibo}, 245,
+              'NOMINA', 244, 'VALES', 261, 'FAHORRO', 263, 'AGUINALDO',
+              382, 'PTU', 262, 'UTILES', '') 
+		  </if>
+          AND dep.cveDepto (+)= rec.DEPTO
+          AND reg.payroll_id (+)= rec.payroll_id 
+	      AND loc.cvelocalidad (+)= rec.location_id 
+	      AND rec.empleado = usu.numeroempleado
+	    ORDER BY 1 ASC
+	</select>
+</mapper>

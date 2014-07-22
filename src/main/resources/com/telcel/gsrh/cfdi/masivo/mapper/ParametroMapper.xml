@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+    PUBLIC "//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.telcel.gsrh.cfdi.masivo.mapper.ParametroMapper">
+	<resultMap id="resultParametro" type="Parametro">
+		<result property="cveParametro" column="cveParametro"/>
+		<result property="valorParametro" column="valorParametro"/>
+		<result property="descripcion" column="descripcion"/>
+	</resultMap>
+
+	<select id="getParametroById" resultMap="resultParametro" timeout="3600">
+		SELECT cveParametro, valorParametro, descripcion
+		FROM recibo_params
+		WHERE 1 = 1
+		  AND cveParametro = #{cveParametro}
+    </select>
+</mapper>

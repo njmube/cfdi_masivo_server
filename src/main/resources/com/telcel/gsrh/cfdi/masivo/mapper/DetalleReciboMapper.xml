@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+    PUBLIC "//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.telcel.gsrh.cfdi.masivo.mapper.DetalleReciboMapper">
+	
+	<resultMap id="resultDetalleRecibo" type="DetalleRecibo">
+		<result property="tipo" column="CLASIFICATION"/>
+		<result property="concepto" column="CONCEPTO"/>
+		<result property="unidades" column="UNIDADES"/>
+		<result property="percepciones" column="PERCEPCIONES"/>
+		<result property="deducciones" column="DEDUCCIONES"/>
+		<result property="saldoAnterior" column="ANTERIOR"/>
+		<result property="saldoActual" column="ACTUAL"/>
+		<result property="movimientos" column="MOVIMIENTOS"/>
+	</resultMap>
+	
+	<resultMap id="resultDatosPago" type="DatosPago">
+		<result property="diasPagados" column="DIAS_PAGADOS"/>
+		<result property="periodicidad" column="PERIODICIDAD"/>
+		<result property="sdi" column="SDI"/>
+		<result property="gravado" column="GRAVADO"/>
+		<result property="exento" column="EXENTO"/>
+		<result property="leyenda" column="LEYENDA"/>
+	</resultMap>
+	
+	
+	<select id="getDetallePercepciones" parameterType="Solicitud" resultMap="resultDetalleRecibo" timeout="3600" >
+		SELECT REPORTING_NAME CONCEPTO, UNIDADES, IMPORTE PERCEPCIONES,
+		  UPPER(CLASIFICATION) CLASIFICATION, ANTERIOR, ACTUAL,
+		  DECODE(NVL(ANTERIOR, 0.00), 0.00, 00.00, IMPORTE) MOVIMIENTOS
+		FROM recibo_valores
+		WHERE 1 = 1
+		  AND numero_empleado = #{numEmpleado}
+		  AND period_year = #{annio}
+		  AND period_num = #{periodo}
+		  AND id_nomina = #{tpRecibo}
+		  <if test="tpRecibo == 244">
+		  	AND upper(clasification) = 'INFORMATIVOS'
+		  	AND TRIM(REPORTING_NAME) != 'SDI'
+		  </if>
+		  <if test="tpRecibo != 244">
+		  	AND upper(clasification) = 'PERCEPCIONES'
+		  </if>
+		ORDER BY element_name
+	</select>
+	
+	<select id="getDetalleDeducciones"  parameterType="Solicitud" resultMap="resultDetalleRecibo" timeout="3600" >
+		SELECT '     ' || REPORTING_NAME CONCEPTO, 0.00 UNIDADES, IMPORTE DEDUCCIONES,
+		  UPPER(CLASIFICATION) CLASIFICATION, ANTERIOR, ACTUAL,
+		  DECODE(NVL(ANTERIOR, 0.00), 0.00, 00.00, IMPORTE) MOVIMIENTOS
+		FROM recibo_valores
+		WHERE 1 = 1
+		  AND numero_empleado = #{numEmpleado}
+		  AND period_year = #{annio}
+		  AND period_num = #{periodo}
+		  AND id_nomina = #{tpRecibo}
+		  AND upper(clasification) = 'DEDUCCIONES'
+		ORDER BY element_name
+	</select>
+	
+	<select id="getDatosPago" parameterType="Solicitud" resultMap="resultDatosPago" timeout="3600">
+		SELECT
+		(SELECT UNIQUE NVL(TIME_PERIOD_ID, 0)  
+		  FROM recibo_valores
+		  WHERE 1 = 1
+		    AND numero_empleado = #{numEmpleado}
+		    AND period_year = #{annio}
+		    AND period_num = #{periodo}
+		    AND id_nomina = #{tpRecibo}) DIAS_PAGADOS,
+		(SELECT DISTINCT PERIODICIDAD 
+		  FROM recibo_valores
+		  WHERE 1 = 1
+		    AND numero_empleado = #{numEmpleado}
+		    AND period_year = #{annio}
+		    AND period_num = #{periodo}
+		    AND id_nomina = #{tpRecibo}) PERIODICIDAD,
+		(SELECT UNIQUE NVL(IMPORTE, 0.00)
+		  FROM recibo_valores
+		  WHERE 1 = 1
+		    AND numero_empleado = #{numEmpleado}
+		    AND period_year = #{annio}
+		    AND period_num = #{periodo}
+		    AND UPPER(ELEMENT_NAME) = 'SDI') SDI,
+		(SELECT NVL(IMPORTE, 0.00) 
+		  FROM recibo_valores
+		  WHERE 1 = 1
+		    AND numero_empleado = #{numEmpleado}
+		    AND period_year = #{annio}
+		    AND period_num = #{periodo}
+		    AND id_nomina = #{tpRecibo}
+		    AND UPPER(ELEMENT_NAME) = 'A143') GRAVADO,
+		(SELECT SUM(NVL(IMPORTE, 0.00)) 
+		  FROM recibo_valores
+		  WHERE 1 = 1
+		    AND numero_empleado = #{numEmpleado}
+		    AND period_year = #{annio}
+		    AND period_num = #{periodo}
+		    AND id_nomina = #{tpRecibo}
+		    AND UPPER(ELEMENT_NAME) IN('A147', 'P080', 'VALES')) EXENTO,
+		(SELECT valorParametro
+		  FROM recibo_params
+		  WHERE 1 = 1
+		    AND cveParametro = decode(#{tpRecibo}, 
+		      244, 18,
+		      245, 19,
+		      262, 17,
+		      263, 16,
+		      382, 15)) LEYENDA
+		FROM DUAL
+	</select>
+</mapper>

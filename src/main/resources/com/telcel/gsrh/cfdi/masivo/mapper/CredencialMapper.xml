@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+    PUBLIC "//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.telcel.gsrh.cfdi.masivo.mapper.CredencialMapper">
+	
+	<resultMap type="Credencial" id="CredencialResult">
+		<result column="IP" property="ip" />
+		<result column="USUARIO" property="usuario" />
+		<result column="CONTRASENNIA" property="contrasennia" />
+    </resultMap>
+	
+	<select id="getCredencialAppServerColdView" resultMap="CredencialResult" timeout="3600">
+		SELECT 
+			(select valorparametro from recibo_params where cveparametro = 12) IP,
+			(select valorparametro from recibo_params where cveparametro = 13) USUARIO,
+			(select valorparametro from recibo_params where cveparametro = 14) CONTRASENNIA
+		FROM DUAL
+	</select>
+</mapper>

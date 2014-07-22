@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+    PUBLIC "//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.telcel.gsrh.cfdi.masivo.mapper.ArchivoMapper">
+	
+	<resultMap type="Archivo" id="ArchivoResult">
+		<result column="NOMBRE_ARCHIVO" property="nbArchivo" />
+		<result column="PRODUCTO" property="producto" />
+    </resultMap>
+	
+	<select id="getArchivosTimbradoLocalidad" timeout="3600" parameterType="Solicitud" resultMap="ArchivoResult">
+		SELECT DISTINCT tim.NOMBRE_ARCHIVO, tim.PRODUCTO 
+		FROM recibo_header rec, recibo_localidad loc, 
+		  recibo_timbrado tim
+		WHERE 1 = 1 
+		  AND UPPER(tim.PERIODO) = #{periodo} || ' ' || #{annio} || ' QUINCENA'
+		  AND tim.RFC_EMISOR = (select valorparametro from recibo_params where cveparametro = 5) 
+		  AND tim.RFC_RECEPTOR = rec.rfc 
+		  AND rec.año = #{annio}
+		  AND rec.quincena = #{periodo}
+		  AND loc.cvelocalidad = #{cveLocalidad}
+		  AND loc.cvelocalidad (+)= rec.location_id
+		ORDER BY 1 ASC  
+	</select>
+	
+	<select id="getArchivosTimbradoEnvio" timeout="3600" parameterType="SolicitudEnvioRecibo" resultMap="ArchivoResult">
+		SELECT DISTINCT tim.NOMBRE_ARCHIVO, tim.PRODUCTO 
+		FROM recibo_header rec, recibo_timbrado tim,
+		  recibo_region reg
+		WHERE 1 = 1
+		  AND UPPER(tim.PERIODO) = #{periodo} || ' ' || #{annio} || ' QUINCENA'
+		  AND tim.RFC_EMISOR = (select valorparametro from recibo_params where cveparametro = 5) 
+		  AND tim.RFC_RECEPTOR = rec.rfc 
+		  AND rec.año = #{annio}
+		  AND rec.quincena = #{periodo}
+		  AND reg.payroll_id (+)= rec.payroll_id
+		  <if test="region != -1">
+		  	AND reg.cveregion = #{region}
+		  </if>
+	      <if test="noEmpleado != -1">
+		  	AND rec.empleado = #{noEmpleado}
+		  </if>
+          <if test="tpRecibo != -1">
+		  	AND tim.PRODUCTO = DECODE(#{tpRecibo}, 245,
+              'NOMINA', 244, 'VALES', 261, 'FAHORRO', 263, 'AGUINALDO',
+              382, 'PTU', 262, 'UTILES', '') 
+		  </if>
+		ORDER BY 1 ASC  
+	</select>
+</mapper>
