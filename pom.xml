@@ -219,6 +219,21 @@
 		<artifactId>jsch</artifactId>
 		<version>0.1.50</version>
 	</dependency>
+	<dependency>
+		<groupId>javax.mail</groupId>
+		<artifactId>mail</artifactId>
+		<version>1.4.7</version>
+	</dependency>
+	<dependency>
+		<groupId>javax.activation</groupId>
+		<artifactId>activation</artifactId>
+		<version>1.1.1</version>
+	</dependency>
+	<dependency>
+		<groupId>com.telcel.mail</groupId>
+		<artifactId>EnviaMail</artifactId>
+		<version>1.0</version>
+	</dependency>
   </dependencies>
   
   <build>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+    PUBLIC "//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.telcel.gsrh.cfdi.masivo.mapper.EnvioMapper">
+	
+	<select id="getIdEnvio" resultType="java.lang.Integer">
+		select seq_recibo_envio.nextval from dual
+	</select>
+	
+	<insert id="putEnvioMensaje" parameterType="EnvioMensaje" timeout="3600">
+		INSERT INTO recibo_envio
+		  (IDENVIO, DESTINATARIO, ASUNTO,
+		  MENSAJE, ESTATUS, FECHAENVIO,
+		  OBSERVACIONES) 
+  		VALUES(#{idEnvio}, #{destinatario}, #{asunto}, 
+		  #{mensaje}, 'PE', sysdate, 
+		  'POR ENVIAR')
+	</insert>
+	
+	<update id="updEnvioMensaje" parameterType="java.lang.Integer" timeout="3600">
+		UPDATE recibo_envio
+		SET ESTATUS = 'OK',
+		  OBSERVACIONES = 'ENVIADO'
+		WHERE IDENVIO = #{idEnvio}
+	</update>
+	
+	<update id="updEnvioMensajeError" timeout="3600">
+		UPDATE recibo_envio
+		SET ESTATUS = 'ER',
+		  OBSERVACIONES = #{msgError}
+		WHERE IDENVIO = #{idEnvio}
+	</update>
+</mapper>

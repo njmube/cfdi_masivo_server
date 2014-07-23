@@ -41,25 +41,33 @@ public class ReciboEnvioPdf implements ReciboEnvio {
 	public void generarRecibo() throws Exception {
 		logger.info("empleado: " + empleado.getNumEmpleado());
 		
-		solicitudNominaEmpleado.setAnnio(empleado.getAnnioPago());
-		solicitudNominaEmpleado.setNumEmpleado(empleado.getNumEmpleado());
-		solicitudNominaEmpleado.setPeriodo(empleado.getQuincena());
-		solicitudNominaEmpleado.setRfcEmpresa(empleado.getRfcEmpresa());
-		solicitudNominaEmpleado.setTpRecibo(utils.getTpNomina(empleado.getProducto()));
+		if(!utils.existeArchivo(
+			utils.getRutaArchivoPdf(
+				String.valueOf(empleado.getNumEmpleado()),
+				empleado.getProducto(),
+				empleado.getQuincena(),
+				empleado.getAnnioPago()))) {
 		
-		//Obtiene percepciones
-		List<DetalleRecibo> percepciones = reciboService.getDetallePercepciones(solicitudNominaEmpleado);
-		
-		//Obtiene deducciones
-		List<DetalleRecibo> deducciones = reciboService.getDetalleDeducciones(solicitudNominaEmpleado);
-		
-		//Concentra percepciones y deducciones
-		List<DetalleRecibo> detalleRecibo = utils.getDetalleRecibo(percepciones, deducciones);
-		
-		//Obtiene datos de pago 
-		DatosPago datosPago = reciboService.getDatosPago(solicitudNominaEmpleado);
-		
-		crearPdf(detalleRecibo, datosPago);
+			solicitudNominaEmpleado.setAnnio(empleado.getAnnioPago());
+			solicitudNominaEmpleado.setNumEmpleado(empleado.getNumEmpleado());
+			solicitudNominaEmpleado.setPeriodo(empleado.getQuincena());
+			solicitudNominaEmpleado.setRfcEmpresa(empleado.getRfcEmpresa());
+			solicitudNominaEmpleado.setTpRecibo(utils.getTpNomina(empleado.getProducto()));
+			
+			//Obtiene percepciones
+			List<DetalleRecibo> percepciones = reciboService.getDetallePercepciones(solicitudNominaEmpleado);
+			
+			//Obtiene deducciones
+			List<DetalleRecibo> deducciones = reciboService.getDetalleDeducciones(solicitudNominaEmpleado);
+			
+			//Concentra percepciones y deducciones
+			List<DetalleRecibo> detalleRecibo = utils.getDetalleRecibo(percepciones, deducciones);
+			
+			//Obtiene datos de pago 
+			DatosPago datosPago = reciboService.getDatosPago(solicitudNominaEmpleado);
+			
+			crearPdf(detalleRecibo, datosPago);
+		}
 	}
 	
 	private void crearPdf(List<DetalleRecibo> detalleRecibo, DatosPago datosPago) throws Exception {

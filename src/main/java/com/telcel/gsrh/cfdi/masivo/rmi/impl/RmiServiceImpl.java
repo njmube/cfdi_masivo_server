@@ -7,15 +7,14 @@ import java.util.concurrent.FutureTask;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import com.telcel.gsrh.cfdi.masivo.action.EnvioReciboAction;
+import com.telcel.gsrh.cfdi.masivo.action.EnvioAction;
+import com.telcel.gsrh.cfdi.masivo.action.GeneradorReciboAction;
 import com.telcel.gsrh.cfdi.masivo.action.LocalidadReciboAction;
-import com.telcel.gsrh.cfdi.masivo.config.Configuracion;
+import com.telcel.gsrh.cfdi.masivo.domain.Empleado;
 import com.telcel.gsrh.cfdi.masivo.domain.SolicitudEnvioRecibo;
 import com.telcel.gsrh.cfdi.masivo.domain.SolicitudUsuario;
-
 import com.telcel.gsrh.cfdi.masivo.recibo.ReciboEnvio;
 import com.telcel.gsrh.cfdi.masivo.recibo.ReciboLocalidad;
 import com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboEnvioPdf;
@@ -23,20 +22,17 @@ import com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboEnvioXml;
 import com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf;
 import com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadXml;
 import com.telcel.gsrh.cfdi.masivo.rmi.RmiService;
+import com.telcel.gsrh.cfdi.masivo.service.ReciboService;
 
 public class RmiServiceImpl implements RmiService {
-	private static ApplicationContext context;
-	private static ThreadPoolTaskExecutor taskExecutor;
+	private ApplicationContext context;
+	private ThreadPoolTaskExecutor taskExecutor;
 	private Logger logger = Logger.getLogger(RmiServiceImpl.class);
 	
-	public RmiServiceImpl() {
-		
-	}
-	
-	static {
+	/*static {
 		context = new AnnotationConfigApplicationContext(Configuracion.class);
 		taskExecutor = context.getBean("threadPoolTaskExecutor", ThreadPoolTaskExecutor.class);
-	}
+	}*/
 	
 	public List<String> generarRecibosLocalidad(SolicitudUsuario solicitud) {
 		ReciboLocalidad reciboLocalidadPdf = context.getBean("reciboLocalidadPdf", ReciboLocalidadPdf.class);
@@ -69,45 +65,87 @@ public class RmiServiceImpl implements RmiService {
 	}
 	
 	public void generarEnviarRecibos(SolicitudEnvioRecibo solicitud) {
-		EnvioReciboAction envioReciboAction = context.getBean("envioReciboAction", EnvioReciboAction.class);
-		ReciboEnvio reciboEnvioPdf = context.getBean("reciboEnvioPdf", ReciboEnvioPdf.class);
-		ReciboEnvio reciboEnvioXml = context.getBean("reciboEnvioXml", ReciboEnvioXml.class);
-		
-		solicitud.setFormato("xml");
-		envioReciboAction.setSolicitud(solicitud);
-		envioReciboAction.setRecibo(reciboEnvioXml);
-		
-		logger.info("Procedemos a generar los recibos xml");
-		
-		FutureTask<Boolean> futureResults = (FutureTask<Boolean>)taskExecutor.submit(envioReciboAction);
+		GeneradorReciboAction generadorReciboAction = context.getBean("generadorReciboAction", GeneradorReciboAction.class);
 		Boolean banderaXml = false;
 		Boolean banderaPdf = false;
 		
 		try {
-			banderaXml = futureResults.get();
+			logger.info("Procedemos a generar los recibos xml");
+			banderaXml = generarRecibosXml(solicitud, generadorReciboAction);
 			
-			if(banderaXml) {//No hubo errores en la generaciÃ³n de xml
+			if(banderaXml) {//No hubo errores en la generación de xml
 				logger.info("Procedemos a generar los recibos pdf");
-				
-				solicitud.setFormato("pdf");
-				envioReciboAction.setSolicitud(solicitud);
-				envioReciboAction.setRecibo(reciboEnvioPdf);
-				
-				futureResults = (FutureTask<Boolean>)taskExecutor.submit(envioReciboAction);
-				banderaPdf = futureResults.get();
+				banderaPdf = generarRecibosPdf(solicitud, generadorReciboAction);
 				
 				if(banderaPdf) {
 					logger.info("Procedemos a enviar los recibos");
+					enviarRecibos(solicitud);
 				}
 			}
 		} catch (InterruptedException e) {
 			logger.error(e.getMessage());
-			envioReciboAction.setMsg(e.getMessage());
+			generadorReciboAction.setMsg(e.getMessage());
 		} catch (ExecutionException e) {
 			logger.error(e.getMessage());
-			envioReciboAction.setMsg(e.getMessage());
+			generadorReciboAction.setMsg(e.getMessage());
 		} finally {
 			logger.info("proceso finalizado con banderaXml: " + banderaXml + "; banderaPdf " + banderaPdf);
 		}
+	}
+	
+	
+	private boolean generarRecibosXml(SolicitudEnvioRecibo solicitud, GeneradorReciboAction generadorReciboAction) throws InterruptedException, ExecutionException {
+		ReciboEnvio reciboEnvioXml = context.getBean("reciboEnvioXml", ReciboEnvioXml.class);
+		Boolean banderaXml = false;
+		
+		solicitud.setFormato("xml");
+		generadorReciboAction.setSolicitud(solicitud);
+		generadorReciboAction.setRecibo(reciboEnvioXml);
+		
+		FutureTask<Boolean> futureResults = (FutureTask<Boolean>)taskExecutor.submit(generadorReciboAction);
+		banderaXml = futureResults.get();
+			
+		return banderaXml;
+	}
+	
+	private boolean generarRecibosPdf(SolicitudEnvioRecibo solicitud, GeneradorReciboAction generadorReciboAction) throws InterruptedException, ExecutionException {
+		ReciboEnvio reciboEnvioPdf = context.getBean("reciboEnvioPdf", ReciboEnvioPdf.class);
+		Boolean banderaPdf = false;
+		
+		solicitud.setFormato("pdf");
+		generadorReciboAction.setSolicitud(solicitud);
+		generadorReciboAction.setRecibo(reciboEnvioPdf);
+		
+		FutureTask<Boolean> futureResults = (FutureTask<Boolean>)taskExecutor.submit(generadorReciboAction);
+		banderaPdf = futureResults.get();
+		
+		return banderaPdf;
+	}
+	
+	private void enviarRecibos(SolicitudEnvioRecibo solicitud) throws InterruptedException, ExecutionException {
+		ReciboService reciboService = context.getBean("reciboService", ReciboService.class);
+		List<Empleado> empleados = reciboService.getEmpleadosTimbradoEnvio(solicitud);
+		Boolean banderaEnvio = false;
+		
+		if(empleados != null) {
+			for(Empleado empleado : empleados) {
+				EnvioAction envioAction = context.getBean("envioAction", EnvioAction.class);
+				envioAction.setEmpleado(empleado);
+				
+				FutureTask<Boolean> futureResults = (FutureTask<Boolean>)taskExecutor.submit(envioAction);
+				banderaEnvio = futureResults.get();
+				
+				if(!banderaEnvio)
+					logger.error(envioAction.getMsg());
+			}
+		}
+	}
+
+	public void setContext(ApplicationContext context) {
+		this.context = context;
+	}
+
+	public void setTaskExecutor(ThreadPoolTaskExecutor taskExecutor) {
+		this.taskExecutor = taskExecutor;
 	}
 }

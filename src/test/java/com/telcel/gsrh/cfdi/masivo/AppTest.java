@@ -26,7 +26,7 @@ public class AppTest {
 	public void setUp() {
 		context = new AnnotationConfigApplicationContext(Configuracion.class);
 		
-		//ObtenciÃ³n de beans
+		//Obtención de beans
 		solicitudUsuario = context.getBean("solicitudUsuario", SolicitudUsuario.class);
 		reciboService = context.getBean("reciboService", ReciboService.class);
 	}

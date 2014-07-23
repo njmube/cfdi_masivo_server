@@ -1,7 +1,6 @@
 package com.telcel.gsrh.cfdi.masivo.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -10,10 +9,10 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.context.annotation.Scope;
 import org.springframework.remoting.rmi.RmiServiceExporter;
-
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import com.telcel.gsrh.cfdi.masivo.action.EnvioReciboAction;
+import com.telcel.gsrh.cfdi.masivo.action.EnvioAction;
+import com.telcel.gsrh.cfdi.masivo.action.GeneradorReciboAction;
 import com.telcel.gsrh.cfdi.masivo.action.LocalidadReciboAction;
 import com.telcel.gsrh.cfdi.masivo.domain.SolicitudNominaEmpleado;
 import com.telcel.gsrh.cfdi.masivo.recibo.ReciboEnvio;
@@ -112,13 +111,22 @@ public class Configuracion {
 		return reciboAction;
 	}
 	
-	@Bean(name="envioReciboAction")
+	@Bean(name="generadorReciboAction")
 	@Scope("prototype")
-	public EnvioReciboAction envioReciboAction() {
-		EnvioReciboAction envioReciboAction = new EnvioReciboAction();
-		envioReciboAction.setGestorArchivos(gestorArchivos());
+	public GeneradorReciboAction generadorReciboAction() {
+		GeneradorReciboAction generadorReciboAction = new GeneradorReciboAction();
+		generadorReciboAction.setGestorArchivos(gestorArchivos());
 		
-		return envioReciboAction;
+		return generadorReciboAction;
+	}
+	
+	@Bean(name="envioAction")
+	@Scope("prototype")
+	public EnvioAction envioAction() {
+		EnvioAction envioAction = new EnvioAction();
+		envioAction.setUtils(utils());
+		
+		return envioAction;
 	}
 	
 	@Bean(name="securityManager")
@@ -128,7 +136,7 @@ public class Configuracion {
 		return securityManager;
 	}
 	
-	@Bean
+	@Bean(name="rmiServiceImpl")
 	public RmiServiceImpl rmiService() {
 		return new RmiServiceImpl();
 	}
@@ -141,6 +149,8 @@ public class Configuracion {
 		rmiExporter.setServiceInterface(RmiService.class);
 		rmiExporter.setRegistryPort(1099);
 		rmiExporter.setRegisterTraceInterceptor(true);
+		rmiExporter.setReplaceExistingBinding(true);
+		rmiExporter.setAlwaysCreateRegistry(true);
 		
 		return rmiExporter;
 	}
@@ -151,6 +161,7 @@ public class Configuracion {
 		threadPoolTaskExecutor.setCorePoolSize(1);
 		threadPoolTaskExecutor.setMaxPoolSize(20);
 		threadPoolTaskExecutor.setQueueCapacity(15);
+		threadPoolTaskExecutor.setDaemon(true);
 		
 		return threadPoolTaskExecutor;
 	}

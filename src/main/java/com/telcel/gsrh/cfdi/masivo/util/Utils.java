@@ -1,7 +1,6 @@
 package com.telcel.gsrh.cfdi.masivo.util;
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -621,5 +620,33 @@ public class Utils {
         sbPathServer.append(".xml");
 		
 		return sbPathServer.toString();
+	}
+	
+	public String getRutaArchivoPdf(String numeroEmpleado, String producto, int periodo, int annio) {
+		StringBuilder sbPathServer = new StringBuilder();
+		sbPathServer.append(env.getProperty("recibo.ruta.pdf"));
+		sbPathServer.append(producto);
+		sbPathServer.append("_");
+		sbPathServer.append(periodo);
+		sbPathServer.append("_");
+		sbPathServer.append(annio);
+		sbPathServer.append("_");
+		sbPathServer.append(numeroEmpleado);
+        sbPathServer.append(".pdf");
+		
+		return sbPathServer.toString();
+	}
+	
+	public String getValueProperties(String key) {
+		return env.getProperty(key);
+	}
+	
+	public boolean existeArchivo(String ruta) {
+		File archivo = new File(ruta);
+		
+		if(archivo.exists())
+			return true;
+		
+		return false;
 	}
 }
