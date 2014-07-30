@@ -33,8 +33,8 @@ public class GeneradorReciboAction implements Callable<Boolean> {
 		try {
 			if(solicitud.getNoEmpleado() != -1) {
 				procesarRecibosPorEmpleado();
-			} else if(solicitud.getRegion() != -1) {
-				procesarRecibosPorRegion();
+			} else {
+				procesarRecibosMasivo();
 			}
 			
 			logger.info("Solicitud procesada exitosamente");
@@ -55,14 +55,14 @@ public class GeneradorReciboAction implements Callable<Boolean> {
 			generarRecibosEmpleadoXml(empleados);
 	}
 	
-	private void procesarRecibosPorRegion() throws Exception {
+	private void procesarRecibosMasivo() throws Exception {
 		List<Empleado> empleados = null;
 		
 		if(solicitud.getFormato().equals("pdf")) {
 			empleados = reciboService.getEmpleadosTimbradoEnvio(solicitud);
 			generarRecibos(empleados);
 		} else if(solicitud.getFormato().equals("xml"))
-			generarRecibosRegionXml();
+			generarRecibosMasivoXml();
 	}
 	
 	private void generarRecibos(List<Empleado> empleados) throws Exception {
@@ -87,7 +87,7 @@ public class GeneradorReciboAction implements Callable<Boolean> {
 		}
 	}
 	
-	private void generarRecibosRegionXml() throws Exception {
+	private void generarRecibosMasivoXml() throws Exception {
 		List<Archivo> archivos = obtenerArchivosTimbrado();
 		
 		for(Archivo archivo : archivos) {

@@ -14,7 +14,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import com.telcel.gsrh.cfdi.masivo.action.EnvioAction;
 import com.telcel.gsrh.cfdi.masivo.action.GeneradorReciboAction;
 import com.telcel.gsrh.cfdi.masivo.action.LocalidadReciboAction;
+import com.telcel.gsrh.cfdi.masivo.domain.ResultadoEnvio;
 import com.telcel.gsrh.cfdi.masivo.domain.SolicitudNominaEmpleado;
+import com.telcel.gsrh.cfdi.masivo.domain.EmpleadoEnvio;
 import com.telcel.gsrh.cfdi.masivo.recibo.ReciboEnvio;
 import com.telcel.gsrh.cfdi.masivo.recibo.ReciboLocalidad;
 import com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboEnvioPdf;
@@ -41,6 +43,18 @@ public class Configuracion {
 	@Bean(name="solicitudNominaEmpleado")
 	public SolicitudNominaEmpleado solicitudNominaEmpleado() {
 		return new SolicitudNominaEmpleado();
+	}
+	
+	@Bean(name="resultadoEnvio")
+	@Scope("prototype")
+	public ResultadoEnvio resultadoEnvio() {
+		return new ResultadoEnvio();
+	}
+	
+	@Bean(name="empleadoEnvio")
+	@Scope("prototype")
+	public EmpleadoEnvio empleadoEnvio() {
+		return new EmpleadoEnvio();
 	}
 	
 	@Bean(name="utils")
@@ -149,8 +163,7 @@ public class Configuracion {
 		rmiExporter.setServiceInterface(RmiService.class);
 		rmiExporter.setRegistryPort(1099);
 		rmiExporter.setRegisterTraceInterceptor(true);
-		rmiExporter.setReplaceExistingBinding(true);
-		rmiExporter.setAlwaysCreateRegistry(true);
+		rmiExporter.setReplaceExistingBinding(false);
 		
 		return rmiExporter;
 	}
@@ -161,7 +174,6 @@ public class Configuracion {
 		threadPoolTaskExecutor.setCorePoolSize(1);
 		threadPoolTaskExecutor.setMaxPoolSize(20);
 		threadPoolTaskExecutor.setQueueCapacity(15);
-		threadPoolTaskExecutor.setDaemon(true);
 		
 		return threadPoolTaskExecutor;
 	}

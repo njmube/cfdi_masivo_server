@@ -16,7 +16,8 @@ public class ConfiguracionDatos {
 	public BasicDataSource dataSource() {
 		BasicDataSource ds = new BasicDataSource();
 		ds.setDriverClassName("oracle.jdbc.driver.OracleDriver");
-		ds.setUrl("jdbc:oracle:thin:@10.191.148.29:1524:TIMB");
+		ds.setUrl("jdbc:oracle:thin:@10.191.148.29:1524:TIMB");//Producción
+		//ds.setUrl("jdbc:oracle:thin:@10.191.148.71:1524:TIMB");//Test
 		ds.setUsername("coldview");
 		ds.setPassword("coldview");
 		

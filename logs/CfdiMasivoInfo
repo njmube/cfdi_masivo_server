@@ -1,48 +1,6 @@
-2014/07/23 14:12:57: org.springframework.context.support.AbstractApplicationContext.prepareRefresh(510) ---> Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@913750: startup date [Wed Jul 23 14:12:57 CDT 2014]; root of context hierarchy
-2014/07/23 14:12:57: org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(598) ---> Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@197a37c: defining beans [org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,configuracion,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor,archivoService,credencialService,reciboService,archivoMapper,credencialMapper,detalleReciboMapper,empleadoMapper,parametroMapper,com.telcel.gsrh.cfdi.masivo.config.ConfiguracionDatos,dataSource,sqlSessionFactory,threadPoolTaskExecutor,solicitudNominaEmpleado,utils,gestorSftp,gestorArchivos,reciboLocalidadPdf,reciboLocalidadXml,reciboEnvioPdf,reciboEnvioXml,localidadReciboAction,generadorReciboAction,envioAction,securityManager,rmiServiceImpl,rmiExporter]; root of factory hierarchy
-2014/07/23 14:13:00: org.springframework.scheduling.concurrent.ExecutorConfigurationSupport.initialize(154) ---> Initializing ExecutorService  'threadPoolTaskExecutor'
-2014/07/23 14:13:00: org.springframework.remoting.rmi.RmiServiceExporter.getRegistry(389) ---> Creating new RMI registry
-2014/07/23 14:13:00: org.springframework.remoting.rmi.RmiServiceExporter.prepare(276) ---> Binding service 'reciboService' to RMI registry: RegistryImpl[UnicastServerRef [liveRef: [endpoint:[10.188.82.10:1099](local),objID:[0:0:0, 0]]]]
-2014/07/23 14:13:58: com.telcel.gsrh.cfdi.masivo.action.LocalidadReciboAction.call(37) ---> SolicitudUsuario [getFormato()=pdf, getUsuarioSoliciante()=0, getCveLocalidad()=20035, getAnnio()=2014, getPeriodo()=12, getRfcEmpresa()=RDI841003QJ4]
-2014/07/23 14:13:58: com.telcel.gsrh.cfdi.masivo.action.LocalidadReciboAction.call(42) ---> archivosSolicitud 0
-2014/07/23 14:13:58: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 21143
-2014/07/23 14:14:08: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 21143
-2014/07/23 14:14:11: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 26762
-2014/07/23 14:14:14: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 26762
-2014/07/23 14:14:17: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 37138
-2014/07/23 14:14:20: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 37138
-2014/07/23 14:14:23: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 42042
-2014/07/23 14:14:26: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 42042
-2014/07/23 14:14:30: com.telcel.gsrh.cfdi.masivo.action.LocalidadReciboAction.call(56) ---> Solicitud procesada exitosamente
-2014/07/23 14:14:30: com.telcel.gsrh.cfdi.masivo.action.LocalidadReciboAction.call(37) ---> SolicitudUsuario [getFormato()=pdf, getUsuarioSoliciante()=0, getCveLocalidad()=40033, getAnnio()=2014, getPeriodo()=12, getRfcEmpresa()=RDI841003QJ4]
-2014/07/23 14:14:30: com.telcel.gsrh.cfdi.masivo.action.LocalidadReciboAction.call(42) ---> archivosSolicitud 0
-2014/07/23 14:14:30: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 7356
-2014/07/23 14:14:33: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 7356
-2014/07/23 14:14:36: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 20834
-2014/07/23 14:14:39: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 20834
-2014/07/23 14:14:42: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 28793
-2014/07/23 14:14:45: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 28793
-2014/07/23 14:14:48: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 32951
-2014/07/23 14:14:51: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 32951
-2014/07/23 14:14:54: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 41701
-2014/07/23 14:14:57: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 41701
-2014/07/23 14:15:00: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 44087
-2014/07/23 14:15:03: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 44087
-2014/07/23 14:15:06: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 44265
-2014/07/23 14:15:08: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 44265
-2014/07/23 14:15:11: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 49785
-2014/07/23 14:15:14: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 49785
-2014/07/23 14:15:17: com.telcel.gsrh.cfdi.masivo.action.LocalidadReciboAction.call(56) ---> Solicitud procesada exitosamente
-2014/07/23 14:15:17: com.telcel.gsrh.cfdi.masivo.action.LocalidadReciboAction.call(37) ---> SolicitudUsuario [getFormato()=pdf, getUsuarioSoliciante()=0, getCveLocalidad()=20060, getAnnio()=2014, getPeriodo()=12, getRfcEmpresa()=RDI841003QJ4]
-2014/07/23 14:15:17: com.telcel.gsrh.cfdi.masivo.action.LocalidadReciboAction.call(42) ---> archivosSolicitud 0
-2014/07/23 14:15:17: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 34995
-2014/07/23 14:15:21: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 34995
-2014/07/23 14:15:24: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 38982
-2014/07/23 14:15:27: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 38982
-2014/07/23 14:15:30: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 47950
-2014/07/23 14:15:33: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 47950
-2014/07/23 14:15:36: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 50767
-2014/07/23 14:15:39: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 50767
-2014/07/23 14:15:41: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 50789
-2014/07/23 14:15:44: com.telcel.gsrh.cfdi.masivo.recibo.impl.ReciboLocalidadPdf.generarRecibo(44) ---> empleado: 50789
-2014/07/23 14:15:48: com.telcel.gsrh.cfdi.masivo.action.LocalidadReciboAction.call(56) ---> Solicitud procesada exitosamente
+2014/07/25 15:05:02: org.springframework.context.support.AbstractApplicationContext.prepareRefresh(510) ---> Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@913750: startup date [Fri Jul 25 15:05:02 CDT 2014]; root of context hierarchy
+2014/07/25 15:05:03: org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(598) ---> Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@197a37c: defining beans [org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,configuracion,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor,archivoService,credencialService,envioService,reciboService,archivoMapper,credencialMapper,detalleReciboMapper,empleadoMapper,envioMapper,parametroMapper,com.telcel.gsrh.cfdi.masivo.config.ConfiguracionDatos,dataSource,sqlSessionFactory,threadPoolTaskExecutor,solicitudNominaEmpleado,resultadoEnvio,empleadoEnvio,utils,gestorSftp,gestorArchivos,reciboLocalidadPdf,reciboLocalidadXml,reciboEnvioPdf,reciboEnvioXml,localidadReciboAction,generadorReciboAction,envioAction,securityManager,rmiServiceImpl,rmiExporter]; root of factory hierarchy
+2014/07/25 15:05:05: org.springframework.scheduling.concurrent.ExecutorConfigurationSupport.initialize(154) ---> Initializing ExecutorService  'threadPoolTaskExecutor'
+2014/07/25 15:05:05: org.springframework.remoting.rmi.RmiServiceExporter.getRegistry(393) ---> Looking for RMI registry at port '1099'
+2014/07/25 15:05:06: org.springframework.remoting.rmi.RmiServiceExporter.getRegistry(404) ---> Could not detect RMI registry - creating new one
+2014/07/25 15:05:06: org.springframework.remoting.rmi.RmiServiceExporter.prepare(276) ---> Binding service 'reciboService' to RMI registry: RegistryImpl[UnicastServerRef [liveRef: [endpoint:[10.188.82.10:1099](local),objID:[0:0:0, 0]]]]

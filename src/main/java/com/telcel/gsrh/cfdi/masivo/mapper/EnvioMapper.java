@@ -1,9 +1,9 @@
-package com.telcel.gsrh.cfdi.masivo.service;
+package com.telcel.gsrh.cfdi.masivo.mapper;
 
 import com.telcel.gsrh.cfdi.masivo.domain.EnvioMensaje;
 import com.telcel.gsrh.cfdi.masivo.domain.MensajeError;
 
-public interface EnvioService {
+public interface EnvioMapper {
 
 	public int getIdEnvio();
 	

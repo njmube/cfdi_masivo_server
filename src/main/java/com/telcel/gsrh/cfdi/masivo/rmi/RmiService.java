@@ -2,13 +2,14 @@ package com.telcel.gsrh.cfdi.masivo.rmi;
 
 import java.util.List;
 
+import com.telcel.gsrh.cfdi.masivo.domain.ResultadoEnvio;
 import com.telcel.gsrh.cfdi.masivo.domain.SolicitudEnvioRecibo;
 import com.telcel.gsrh.cfdi.masivo.domain.SolicitudUsuario;
 
 public interface RmiService {
 
 	/**
-	 * Genera los recibos de una localidad en un periodo y aÃ±o determinado
+	 * Genera los recibos de una localidad en un periodo y año determinado
 	 * @param solicitud Datos de la solicitud
 	 * @return Lista de arzhivos zip generados
 	 * @throws Exception
@@ -16,8 +17,9 @@ public interface RmiService {
 	public List<String> generarRecibosLocalidad(SolicitudUsuario solicitud);
 	
 	/**
-	 * Genera y envÃ­a los recibos de nÃ³mina Telcel en base a ciertos parÃ¡metros de filtrado
-	 * @param solicitud ParÃ¡metros de filtrado
+	 * Genera y envía los recibos en base a los parámetros de filtrado
+	 * @param solicitud Parámetros de filtrado
+	 * @return ResultadoEnvio Listas con los empleados a los que se les envío correctamente y con error el recibo
 	 */
-	public void generarEnviarRecibos(SolicitudEnvioRecibo solicitud);
+	public ResultadoEnvio generarEnviarRecibos(SolicitudEnvioRecibo solicitud);
 }

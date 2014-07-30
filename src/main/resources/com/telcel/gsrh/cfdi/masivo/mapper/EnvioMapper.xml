@@ -26,7 +26,7 @@
 		WHERE IDENVIO = #{idEnvio}
 	</update>
 	
-	<update id="updEnvioMensajeError" timeout="3600">
+	<update id="updEnvioMensajeError" parameterType="MensajeError" timeout="3600">
 		UPDATE recibo_envio
 		SET ESTATUS = 'ER',
 		  OBSERVACIONES = #{msgError}

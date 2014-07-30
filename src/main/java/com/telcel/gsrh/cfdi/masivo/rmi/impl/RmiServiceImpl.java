@@ -13,6 +13,8 @@ import com.telcel.gsrh.cfdi.masivo.action.EnvioAction;
 import com.telcel.gsrh.cfdi.masivo.action.GeneradorReciboAction;
 import com.telcel.gsrh.cfdi.masivo.action.LocalidadReciboAction;
 import com.telcel.gsrh.cfdi.masivo.domain.Empleado;
+import com.telcel.gsrh.cfdi.masivo.domain.EmpleadoEnvio;
+import com.telcel.gsrh.cfdi.masivo.domain.ResultadoEnvio;
 import com.telcel.gsrh.cfdi.masivo.domain.SolicitudEnvioRecibo;
 import com.telcel.gsrh.cfdi.masivo.domain.SolicitudUsuario;
 import com.telcel.gsrh.cfdi.masivo.recibo.ReciboEnvio;
@@ -28,11 +30,6 @@ public class RmiServiceImpl implements RmiService {
 	private ApplicationContext context;
 	private ThreadPoolTaskExecutor taskExecutor;
 	private Logger logger = Logger.getLogger(RmiServiceImpl.class);
-	
-	/*static {
-		context = new AnnotationConfigApplicationContext(Configuracion.class);
-		taskExecutor = context.getBean("threadPoolTaskExecutor", ThreadPoolTaskExecutor.class);
-	}*/
 	
 	public List<String> generarRecibosLocalidad(SolicitudUsuario solicitud) {
 		ReciboLocalidad reciboLocalidadPdf = context.getBean("reciboLocalidadPdf", ReciboLocalidadPdf.class);
@@ -64,10 +61,13 @@ public class RmiServiceImpl implements RmiService {
 		return lista;
 	}
 	
-	public void generarEnviarRecibos(SolicitudEnvioRecibo solicitud) {
+	public ResultadoEnvio generarEnviarRecibos(SolicitudEnvioRecibo solicitud) {
+		logger.info(solicitud);
+		
 		GeneradorReciboAction generadorReciboAction = context.getBean("generadorReciboAction", GeneradorReciboAction.class);
 		Boolean banderaXml = false;
 		Boolean banderaPdf = false;
+		ResultadoEnvio resultadoEnvio = null;
 		
 		try {
 			logger.info("Procedemos a generar los recibos xml");
@@ -79,7 +79,7 @@ public class RmiServiceImpl implements RmiService {
 				
 				if(banderaPdf) {
 					logger.info("Procedemos a enviar los recibos");
-					enviarRecibos(solicitud);
+					resultadoEnvio = enviarRecibos(solicitud);
 				}
 			}
 		} catch (InterruptedException e) {
@@ -91,6 +91,8 @@ public class RmiServiceImpl implements RmiService {
 		} finally {
 			logger.info("proceso finalizado con banderaXml: " + banderaXml + "; banderaPdf " + banderaPdf);
 		}
+		
+		return resultadoEnvio;
 	}
 	
 	
@@ -122,23 +124,43 @@ public class RmiServiceImpl implements RmiService {
 		return banderaPdf;
 	}
 	
-	private void enviarRecibos(SolicitudEnvioRecibo solicitud) throws InterruptedException, ExecutionException {
+	private ResultadoEnvio enviarRecibos(SolicitudEnvioRecibo solicitud) throws InterruptedException, ExecutionException {
 		ReciboService reciboService = context.getBean("reciboService", ReciboService.class);
+		ResultadoEnvio resultadoEnvio = context.getBean("resultadoEnvio", ResultadoEnvio.class);
 		List<Empleado> empleados = reciboService.getEmpleadosTimbradoEnvio(solicitud);
+		
 		Boolean banderaEnvio = false;
+		vaciarListas(resultadoEnvio);
 		
 		if(empleados != null) {
 			for(Empleado empleado : empleados) {
+				EmpleadoEnvio empleadoEnvio = context.getBean("empleadoEnvio", EmpleadoEnvio.class);
 				EnvioAction envioAction = context.getBean("envioAction", EnvioAction.class);
 				envioAction.setEmpleado(empleado);
+				
+				empleadoEnvio.setNumEmpleado(empleado.getNumEmpleado());
+				empleadoEnvio.setNbEmpleado(empleado.getNbEmpleado());
+				empleadoEnvio.setEmailEnvio(empleado.getEmail2().equals("---") ? empleado.getEmail1() : empleado.getEmail2());
 				
 				FutureTask<Boolean> futureResults = (FutureTask<Boolean>)taskExecutor.submit(envioAction);
 				banderaEnvio = futureResults.get();
 				
-				if(!banderaEnvio)
+				if(banderaEnvio) {
+					resultadoEnvio.agregarEmpleadoEnvioCorrecto(empleadoEnvio);
+				} else {
+					empleadoEnvio.setMsg(envioAction.getMsg());
+					resultadoEnvio.agregarEmpleadoEnvioError(empleadoEnvio);
 					logger.error(envioAction.getMsg());
+				}
 			}
 		}
+		
+		return resultadoEnvio;
+	}
+	
+	private void vaciarListas(ResultadoEnvio resultadoEnvio) {
+		resultadoEnvio.getEmpleadosEnvioCorrecto().clear();
+		resultadoEnvio.getEmpleadosEnvioError().clear();
 	}
 
 	public void setContext(ApplicationContext context) {

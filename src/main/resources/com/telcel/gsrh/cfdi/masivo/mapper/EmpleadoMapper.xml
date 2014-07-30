@@ -55,6 +55,8 @@
 		<result column="JORNADA" property="jornada" />
 		<result column="LUGAREMISION" property="lugarEmision" />
 		<result column="LUGAREMISION" property="lugarEmision" />
+		<result column="EMAIL1" property="email1" />
+		<result column="EMAIL2" property="email2" />
 	</resultMap>
 	
 	<select id="getEmpleadosTimbradoLocalidad" timeout="3600" resultMap="EmpleadoResult" parameterType="Solicitud">
@@ -97,7 +99,7 @@
 	    TRIM(REPLACE(UPPER(rec.CONTRATO), 'PLANTA', '')) CONTRATO, 
 	    rec.BANCO, rec.SALARIO, 
 	    DECODE(UPPER(rec.JORNADA), 'JORNADA COMPLETA', 'CONTINUADA', rec.JORNADA) JORNADA, 
-	    loc.NBLOCALIDAD || ', ' || loc.CIUDAD LUGAREMISION 
+	    loc.NBLOCALIDAD || ', ' || loc.CIUDAD LUGAREMISION
 	    FROM recibo_header rec, recibo_depto dep, recibo_region reg, 
 	      recibo_localidad loc, recibo_timbrado tim, 
 	      recibo_usuario usu 
@@ -155,14 +157,16 @@
         TRIM(REPLACE(UPPER(rec.CONTRATO), 'PLANTA', '')) CONTRATO, 
         rec.BANCO, rec.SALARIO, 
         DECODE(UPPER(rec.JORNADA), 'JORNADA COMPLETA', 'CONTINUADA', rec.JORNADA) JORNADA, 
-        loc.NBLOCALIDAD || ', ' || loc.CIUDAD LUGAREMISION 
+        loc.NBLOCALIDAD || ', ' || loc.CIUDAD LUGAREMISION,
+        NVL(usu.email1, '---') EMAIL1, NVL(usu.email2, '---') EMAIL2 
 	    FROM recibo_header rec, recibo_depto dep, recibo_region reg, 
 	      recibo_localidad loc, recibo_timbrado tim, 
 	      recibo_usuario usu 
 	    WHERE 1 = 1 
 	      AND UPPER(tim.PERIODO) = #{periodo} || ' ' || #{annio} || ' QUINCENA'
 	      AND tim.RFC_EMISOR = (select valorparametro from recibo_params where cveparametro = 5) 
-	      AND tim.RFC_RECEPTOR = rec.rfc 
+	      AND tim.RFC_RECEPTOR = rec.rfc
+	      AND tim.NRO_EMPLEADO = rec.EMPLEADO  
 	      AND rec.año = #{annio}
 	      AND rec.quincena = #{periodo}
 	      <if test="region != -1">
